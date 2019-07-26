@@ -5,4 +5,6 @@
     <string name="button_save">Save</string>
     <string name="empty_not_saved">Word not saved because it is empty.</string>
     <string name="no_word">No Word</string>
+    <string name="action_reset">Clear all data</string>
+    <string name="database_empty">Database Empty!</string>
 </resources>

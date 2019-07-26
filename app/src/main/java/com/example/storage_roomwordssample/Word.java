@@ -2,6 +2,7 @@ package com.example.storage_roomwordssample;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -13,14 +14,13 @@ import android.support.annotation.NonNull;
 @Entity(tableName = "word_table")
 public class Word {
 
-    @PrimaryKey
     @NonNull
     @ColumnInfo(name = "word")    // Column name.
     private String mWord;
 
-//    For auto-generated primary key.
-//    @PrimaryKey(autoGenerate = true)
-//    public int key;
+    //For auto-generated primary key.
+    @PrimaryKey(autoGenerate = true)
+    public int key;
 
     // NonNull annotation makes sure that mWord is never null.
     public Word(@NonNull String mWord) {
@@ -29,5 +29,18 @@ public class Word {
 
     public String getWord() {
         return this.mWord;
+    }
+
+    public int getKey() {
+        return key;
+    }
+
+    /**
+     *  Since, Room expects only one constructor by default in an entity class.
+     */
+    @Ignore
+    public Word(@NonNull String mWord, int key) {
+        this.mWord = mWord;
+        this.key = key;
     }
 }

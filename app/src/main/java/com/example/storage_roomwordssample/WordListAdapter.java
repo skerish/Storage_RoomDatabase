@@ -10,10 +10,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
+
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
 
     private final LayoutInflater mInflater;
     private List<Word> mWords;
+    private static MyClickListener myClickListener;
+
 
     WordListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -32,6 +35,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
         holder.wordItemView.setText(current.getWord());
     }
 
+    // Will be called first.
     void setWords(List<Word> words){
         mWords = words;
         notifyDataSetChanged();
@@ -44,6 +48,10 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
         else return 0;
     }
 
+    // For ItemTouchHelper.
+    public Word getWordAtPosition(int position){
+        return mWords.get(position);
+    }
 
     class WordViewHolder extends RecyclerView.ViewHolder {
 
@@ -52,6 +60,18 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
         public WordViewHolder(@NonNull View itemView) {
             super(itemView);
             wordItemView = itemView.findViewById(R.id.textView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // for passing values to MyClickListener method.
+                    myClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
         }
     }
+
+    public void setCustomItemClickListener(MyClickListener myClickListener){
+        WordListAdapter.myClickListener = myClickListener;
+    }
+
 }

@@ -12,16 +12,16 @@ import android.os.AsyncTask;
  * exportSchema keeps a history of schema versions.
  */
 
-@Database(entities = {Word.class}, version = 1, exportSchema = false)
+@Database(entities = {Word.class}, version = 4, exportSchema = false)
 public abstract class WordRoomDatabase extends RoomDatabase {
 
+    // Required abstract method of DAO type to be defined by System itself on build.
     public abstract Word_DAO wordDao();
 
     private static WordRoomDatabase INSTANCE;
 
     // Create the WordRoomDatabase as a singleton to prevent having multiple instances of the
     // database opened at the same time.
-
     public static WordRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null){
             synchronized (WordRoomDatabase.class){
@@ -33,7 +33,7 @@ public abstract class WordRoomDatabase extends RoomDatabase {
                             // if no Migration object.
                             // Migration is not part of this practical.
                             .fallbackToDestructiveMigration()
-                            .addCallback(sRoomDatabaseCallback)
+//                            .addCallback(sRoomDatabaseCallback)
                             .build();
                 }
             }
@@ -41,37 +41,37 @@ public abstract class WordRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback(){
-        @Override
-        public void onOpen(SupportSQLiteDatabase db){
-            super.onOpen(db);
-            new PopulateDbAsync(INSTANCE).execute();
-        }
-    };
-
-
-    /**
-     * Populate the database with the initial data set
-     * only if the database has no entries.
-     */
-    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
-
-        private final Word_DAO mDao;
-        String[] words = {"Jerry", "Jamie", "Jason"};
-
-        PopulateDbAsync(WordRoomDatabase db) {
-            mDao = db.wordDao();
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            mDao.deleteAll();
-
-            for (int i = 0; i <= words.length-1; i++) {
-                Word word = new Word(words[i]);
-                mDao.insert(word);
-            }
-            return null;
-        }
-    }
+//    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback(){
+//        @Override
+//        public void onOpen(SupportSQLiteDatabase db){
+//            super.onOpen(db);
+//            new PopulateDbAsync(INSTANCE).execute();
+//        }
+//    };
+//
+//
+//    /**
+//     * Populate the database with the initial data set
+//     * only if the database has no entries.
+//     */
+//    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
+//
+//        private final Word_DAO mDao;
+//        String[] words = {"Jerry", "Jamie", "Jason"};
+//        PopulateDbAsync(WordRoomDatabase db) {
+//            mDao = db.wordDao();
+//        }
+//
+//        @Override
+//        protected Void doInBackground(final Void... params) {
+//            if (mDao.getAnyWord() == null){
+////                for (int i = 0; i < words.length; i++) {
+////                    Word word = new Word(words[i]);
+////                    mDao.insert(word);
+////                }
+//            }
+//            return null;
+//        }
+//
+//    }
 }

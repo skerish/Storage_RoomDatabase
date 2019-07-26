@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
-
 import java.util.List;
 
 /**
@@ -29,6 +28,18 @@ public class WordViewModel extends AndroidViewModel {
 
     public void insert(Word word){
         mRepository.insert(word);
+    }
+
+    public void deleteAll(){
+        mRepository.deleteAll();
+    }
+
+    public void deleteSingleWord(Word word){
+        mRepository.deleteSingleWord(word);
+    }
+
+    public void update(Word word){
+        mRepository.update(word);
     }
 
 }
