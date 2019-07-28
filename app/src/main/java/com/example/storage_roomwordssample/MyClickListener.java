@@ -10,6 +10,7 @@ public interface MyClickListener {
      *
      *  Note: MyClickListener must be initialize first.
      */
+
     void onItemClick(View v, int position);
 
 }

@@ -34,8 +34,8 @@ public interface Word_DAO {
     @Query("SELECT * FROM word_table ORDER BY word ASC")
     LiveData<List<Word>> getAllWords();
 
-    @Query("SELECT * FROM word_table")
-    List<Word> getAllWordsForChecking();
+//    @Query("SELECT * FROM word_table")
+//    List<Word> getAllWordsForChecking();
 
     @Query("SELECT * FROM word_table LIMIT 1")
     Word getAnyWord();

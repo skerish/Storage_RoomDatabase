@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity{
     private WordViewModel mWordViewModel;
     RecyclerView recyclerView;
     FloatingActionButton fab;
-    TextView textView;
+    public static TextView textView;
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
     public static final int UPDATE_WORD_ACTIVITY_REQUEST_CODE = 2;
@@ -91,10 +91,7 @@ public class MainActivity extends AppCompatActivity{
                 mWordViewModel.deleteSingleWord(myWord);
             }
         });
-
         helper.attachToRecyclerView(recyclerView);
-
-
 
         adapter.setCustomItemClickListener(new MyClickListener() {
             @Override
@@ -103,7 +100,6 @@ public class MainActivity extends AppCompatActivity{
                 launchUpdateWordMethod(word);
             }
         });
-
     }
 
     @Override
@@ -158,4 +154,11 @@ public class MainActivity extends AppCompatActivity{
         startActivityForResult(intent, UPDATE_WORD_ACTIVITY_REQUEST_CODE);
     }
 
+}
+
+class AnonymousHelperClass{
+
+    public TextView getTextView(){
+        return MainActivity.textView;
+    }
 }

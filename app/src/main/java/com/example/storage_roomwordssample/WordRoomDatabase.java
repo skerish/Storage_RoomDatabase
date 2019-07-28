@@ -6,6 +6,10 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.TextView;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Listing the entities class or classes creates corresponding tables in the database.
@@ -15,7 +19,7 @@ import android.os.AsyncTask;
 @Database(entities = {Word.class}, version = 4, exportSchema = false)
 public abstract class WordRoomDatabase extends RoomDatabase {
 
-    // Required abstract method of DAO type to be defined by System itself on build.
+    // Required abstract method of DAO type which'll be defined by System itself on build.
     public abstract Word_DAO wordDao();
 
     private static WordRoomDatabase INSTANCE;
@@ -32,8 +36,8 @@ public abstract class WordRoomDatabase extends RoomDatabase {
                             // Wipes and rebuilds instead of migrating
                             // if no Migration object.
                             // Migration is not part of this practical.
-                            .fallbackToDestructiveMigration()
-//                            .addCallback(sRoomDatabaseCallback)
+                           // .fallbackToDestructiveMigration()
+                            .addCallback(sRoomDatabaseCallback)
                             .build();
                 }
             }
@@ -41,37 +45,57 @@ public abstract class WordRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-//    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback(){
-//        @Override
-//        public void onOpen(SupportSQLiteDatabase db){
-//            super.onOpen(db);
-//            new PopulateDbAsync(INSTANCE).execute();
-//        }
-//    };
-//
-//
-//    /**
-//     * Populate the database with the initial data set
-//     * only if the database has no entries.
-//     */
-//    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
-//
-//        private final Word_DAO mDao;
-//        String[] words = {"Jerry", "Jamie", "Jason"};
-//        PopulateDbAsync(WordRoomDatabase db) {
-//            mDao = db.wordDao();
-//        }
-//
-//        @Override
-//        protected Void doInBackground(final Void... params) {
-//            if (mDao.getAnyWord() == null){
-////                for (int i = 0; i < words.length; i++) {
-////                    Word word = new Word(words[i]);
-////                    mDao.insert(word);
-////                }
-//            }
-//            return null;
-//        }
-//
-//    }
+    // Use to implement any action or view on opening the database.
+    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback(){
+        @Override
+        public void onOpen(SupportSQLiteDatabase db){
+            super.onOpen(db);
+            new PopulateDbAsync(INSTANCE).execute();
+        }
+    };
+
+    /**
+     *  Note: This functionality will only work whenever onCreate() is called.
+     *        For global implementation, need to implement it in every database query AsyncTask.
+     */
+    private static class PopulateDbAsync extends AsyncTask<Void, Boolean, Void> {
+
+        private final Word_DAO mDao;
+   //     String[] words = {"Jerry", "Jamie", "Jason"};
+        AnonymousHelperClass anonymousHelperClass = new AnonymousHelperClass();
+        WeakReference<TextView> textViewWeakReference;
+
+        PopulateDbAsync(WordRoomDatabase db) {
+            mDao = db.wordDao();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            textViewWeakReference = new WeakReference<>(anonymousHelperClass.getTextView());
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            if (mDao.getAnyWord() == null){
+                publishProgress(true);
+//                for (int i = 0; i < words.length; i++) {
+//                    Word word = new Word(words[i]);
+//                    mDao.insert(word);
+//                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Boolean... values) {
+            super.onProgressUpdate(values);
+            if (values[0]){
+                textViewWeakReference.get().setVisibility(View.VISIBLE);
+            }
+            else{
+                textViewWeakReference.get().setVisibility(View.GONE);
+            }
+        }
+    }
 }

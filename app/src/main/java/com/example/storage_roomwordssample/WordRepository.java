@@ -3,17 +3,22 @@ package com.example.storage_roomwordssample;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class WordRepository {
 
     private Word_DAO mWordDao;
-    private LiveData<List<Word>> mAllWords;
+    private static AnonymousHelperClass anonymousHelperClass;
+
+
     public WordRepository(Application application) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
         mWordDao = db.wordDao();
-        mAllWords = mWordDao.getAllWords();
+        anonymousHelperClass = new AnonymousHelperClass();   // To prevent null object reference.
     }
 
     /**
@@ -23,7 +28,7 @@ public class WordRepository {
      */
 
     LiveData<List<Word>> getAllWords(){
-        return mAllWords;
+        return mWordDao.getAllWords();
     }
 
     public void insert(Word word){
@@ -48,55 +53,76 @@ public class WordRepository {
     private static class insertAsyncTask extends AsyncTask<Word, Void, Void> {
 
         private Word_DAO mAsyncTaskDao;
+        WeakReference<TextView> textViewWeakReference;
 
         insertAsyncTask(Word_DAO dao) {
             mAsyncTaskDao = dao;
+            textViewWeakReference = new WeakReference<>(anonymousHelperClass.getTextView());
         }
 
         @Override
         protected Void doInBackground(Word... params) {
-            List<Word> words = mAsyncTaskDao.getAllWordsForChecking();
-            boolean flag = false;
-            for (int i = 0; i < words.size(); i++) {
-                if (words.get(i).equals(params[0])){
-                    flag = true;
-                }
+            if (mAsyncTaskDao.getAnyWord() == null){
+                publishProgress();
             }
-            if (!flag){
-                mAsyncTaskDao.insert(params[0]);
-            }
+            mAsyncTaskDao.insert(params[0]);
             return null;
         }
 
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            textViewWeakReference.get().setVisibility(View.GONE);
+        }
     }
 
     private static class deleteAsyncTask extends AsyncTask<Void, Void, Void>{
 
         private Word_DAO mAsyncTaskDao2;
+        WeakReference<TextView> textViewWeakReference;
 
         public deleteAsyncTask(Word_DAO mWordDao) {
             mAsyncTaskDao2 = mWordDao;
+            textViewWeakReference = new WeakReference<>(anonymousHelperClass.getTextView());
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             mAsyncTaskDao2.deleteAll();
+            publishProgress();
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            textViewWeakReference.get().setVisibility(View.VISIBLE);
         }
     }
 
     private static class deleteSingleAsyncTask extends AsyncTask<Word, Void, Void>{
 
         private Word_DAO word_dao;
+        WeakReference<TextView> textViewWeakReference;
 
         public deleteSingleAsyncTask(Word_DAO mWordDao) {
             word_dao = mWordDao;
+            textViewWeakReference = new WeakReference<>(anonymousHelperClass.getTextView());
         }
 
         @Override
         protected Void doInBackground(Word... params) {
             word_dao.deleteSingleWord(params[0]);
+            if (word_dao.getAnyWord() == null){
+                publishProgress();
+            }
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            textViewWeakReference.get().setVisibility(View.VISIBLE);
         }
     }
 

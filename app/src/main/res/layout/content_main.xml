@@ -28,6 +28,6 @@
         android:layout_height="wrap_content"
         android:text="@string/database_empty"
         style="@style/text_view_style"
-        android:visibility="gone"/>
+        android:visibility="invisible"/>
 
 </android.support.constraint.ConstraintLayout>

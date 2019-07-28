@@ -71,6 +71,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     }
 
     public void setCustomItemClickListener(MyClickListener myClickListener){
+        // to initialize the class variable one with the argument one.
         WordListAdapter.myClickListener = myClickListener;
     }
 
